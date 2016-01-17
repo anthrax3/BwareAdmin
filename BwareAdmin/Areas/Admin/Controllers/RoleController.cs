@@ -8,6 +8,7 @@ using BwareAdmin.Models;
 
 namespace BwareAdmin.Areas.Admin.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
         Adapter.Interface.IRoleAdapter _adapter;

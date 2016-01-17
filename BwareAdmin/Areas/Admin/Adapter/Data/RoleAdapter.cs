@@ -32,7 +32,7 @@ namespace BwareAdmin.Areas.Admin.Adapter.Data
 
         public bool removeRole(RoleViewModel model)
         {
-            if (model.CurrentName == null || model.CurrentName == "")
+            if (model.CurrentName == null || model.CurrentName == "" || model.CurrentName == "Admin" || model.CurrentName == "Staff")
             {
                 return false;
             }
