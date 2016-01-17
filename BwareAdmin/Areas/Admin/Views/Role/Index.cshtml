@@ -1,11 +1,47 @@
-﻿
-@{
-    ViewBag.Title = "Index";
-}
+﻿@model List<BwareAdmin.Models.RoleViewModel>
 
-<h2>Index</h2>
+<div class="col-md-12" style="border-radius: 10px; margin-top: 40px">
+    <div class="content-wrapper well" style="border-radius: 10px; margin-right: 10px">
+        <p style="text-align:center">
+            <a href='@Url.Action("Create", "Role")' class="btn btn-primary"> Create Role</a>
+        </p>
+    </div>
+</div>
 
-@foreach (var message in ViewBag.Messages)
+@if (!String.IsNullOrWhiteSpace(ViewBag.Result))
 {
-    <h5> @message.MessageText </h5>
+    <div class="col-md-12" style="border-radius: 10px; margin-top: 5px">
+        <div class="alert alert-info" role="alert">
+            <p>@ViewBag.Result</p>
+        </div>
+    </div>
 }
+
+<table class="table">
+    <tr>
+        <th style="font-family:'Comic Sans MS'; font-size:large">
+            Role Name
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(m => item.CurrentName)
+            </td>
+            @if (item.CurrentName != "Admin" && item.CurrentName != "Staff")
+            {
+                <td>
+                    @Html.ActionLink("Delete", "Delete", new { id = item.CurrentName })
+                </td>
+            }
+            else
+            {
+                <td> Permanent Role </td>
+            }
+        </tr>
+    }
+
+</table>

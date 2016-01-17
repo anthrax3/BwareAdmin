@@ -4,28 +4,27 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Bware.Data.Model;
+using BwareAdmin.Models;
 
 namespace BwareAdmin.Areas.Admin.Controllers
 {
     public class RoleController : Controller
     {
+        Adapter.Interface.IRoleAdapter _adapter;
+
+        public RoleController()
+        {
+            _adapter = new Adapter.Data.RoleAdapter();
+        }
+
         // GET: Admin/Role
-        public ActionResult Index()
+        public ActionResult Index(String resultMessage = null)
         {
-            var db = new BwareContext();
-            var messages = new List<Message>();
-
-            messages = db.Messages.ToList();
-            ViewBag.messages = messages;
-
-            return View();
+            ViewBag.Result = resultMessage; // display any result message if one has been passed
+            var result = _adapter.getRoleViewModelList();
+            return View(result);
         }
 
-        // GET: Admin/Role/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
         // GET: Admin/Role/Create
         public ActionResult Create()
@@ -35,13 +34,22 @@ namespace BwareAdmin.Areas.Admin.Controllers
 
         // POST: Admin/Role/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(RoleViewModel roleModel)
         {
+            if (!ModelState.IsValid || roleModel == null || roleModel.NewName == null ||roleModel.NewName == "")
+            {
+                return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} could not be created.", roleModel.NewName) });
+            }
+
             try
             {
-                // TODO: Add insert logic here
+                if (_adapter.SaveRole(roleModel))
+                {
+                    return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} created.", roleModel.NewName) });
 
-                return RedirectToAction("Index");
+                }
+                return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} could not be created.", roleModel.NewName) });
+
             }
             catch
             {
@@ -49,47 +57,43 @@ namespace BwareAdmin.Areas.Admin.Controllers
             }
         }
 
-        // GET: Admin/Role/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Admin/Role/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         // GET: Admin/Role/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete(String id)
         {
-            return View();
+            ViewBag.RoleName = id;
+            var result = _adapter.getRoleFromId(id);
+
+            if (result != null)  { return View(result); }
+
+            // Not found
+            return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} not found.", id) });
         }
 
         // POST: Admin/Role/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(RoleViewModel model)
         {
+            if (!ModelState.IsValid) return View(model);
+            if (model == null || model.CurrentName == null || model.CurrentName == "")
+            {
+                return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} could not be deleted.", model.CurrentName) });
+            }
+
             try
             {
-                // TODO: Add delete logic here
+                var result = _adapter.removeRole(model);
 
-                return RedirectToAction("Index");
+                if (result)
+                {
+                    return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} removed.", model.CurrentName) });
+                }
+
+                return RedirectToAction("Index", new { resultMessage = String.Format("Role {0} not found.", model.CurrentName) });
             }
             catch
             {
-                return View();
+                return View(model);
             }
         }
     }
