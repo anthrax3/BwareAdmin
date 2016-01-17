@@ -10,5 +10,6 @@ namespace BwareAdmin.Areas.Admin.Adapter.Interface
     interface IUserAdapter
     {
         IEnumerable<UserViewModel> getAllUsers();
+        UserViewModel getUserRoles(String id);
     }
 }

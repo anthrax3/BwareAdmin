@@ -9,6 +9,8 @@ namespace BwareAdmin.Models
     public class UserViewModel
     {
         public String UserName { get; set; }
+        public String UserId { get; set; }
+        public List<String> Roles { get; set; }
 
     }
 }
